@@ -1,0 +1,85 @@
+## ffmpeg commands for meghan's frog video
+## the goal: get a video of the male not inflating his vocal sac, reverse it, concatenate the two together
+
+# based on http://stackoverflow.com/questions/2553448/encode-video-in-reverse
+# and https://github.com/gsiou/video-reverse-script/blob/master/reverse.sh
+
+sw_vers
+# ProductName:	Mac OS X
+# ProductVersion:	10.11.1
+# BuildVersion:	15B42
+
+
+ffmpeg -version
+#
+# ffmpeg version 2.8.1 Copyright (c) 2000-2015 the FFmpeg developers
+# built with Apple LLVM version 7.0.0 (clang-700.1.76)
+# configuration: --prefix=/usr/local/Cellar/ffmpeg/2.8.1_1 --enable-shared --enable-pthreads --enable-gpl --enable-version3 --enable-hardcoded-tables --enable-avresample --cc=clang --host-cflags= --host-ldflags= --enable-opencl --enable-libx264 --enable-libmp3lame --enable-libvo-aacenc --enable-libxvid --enable-libfaac --enable-libssh --enable-libsoxr --enable-libquvi --enable-libvidstab --enable-nonfree --enable-vda
+
+# get first the first 900 milliseconds before he starts calling:
+ffmpeg -ss 00:00:00.000 -t 00:00:00.900 -i Gils_video_chuck.avi -vcodec libx264 gil.avi
+
+# some useful stats about this video
+file gil.avi
+
+# gil.avi: RIFF (little-endian) data, AVI, 640 x 480, 30.00 fps, video: H.264 X.264 or H.264, audio: MPEG-1 Layer 3 (stereo, 44100 Hz)
+
+# length of video
+ffmpeg -i gil.avi # and look for duration. should be 0.94 ms
+# Duration: 00:00:00.94, start: 0.000000, bitrate: 1248 kb/s
+
+# reverse the video
+# first extract all the photos from the video in a new folder called images:
+mkdir images
+cd images/
+ffmpeg -i ../Gil.avi -an -qscale 1 %d.jpg
+images=$(ls *.jpg | wc -l)  # count number of photos; save to a variable
+
+
+####### not done. lettme know if you need audio #######
+# dump audio
+ ffmpeg -i ../Gil.avi -vn -ac 2 audio.wav
+
+ # reverse audio using sox
+ sox --version
+ # sox:      SoX v
+
+ sox -V audio.wav backwards.wav reverse
+ ################################################
+
+# reverse the order of the photos, pipe back into ffmpeg
+# cat $(ls -t *jpg) | ffmpeg -f image2pipe -vcodec mjpeg -r 30 -i - -i backwards.wav -vcodec libx264 -crf 20 -preset slow -threads 0 -acodec flac output.mkv
+# cant get this working
+# try something else:
+
+# rename images in opposite order
+i=1
+factor=0
+while [ $factor -lt $images ]; do
+    new_name=$((images-factor))
+    echo $new_name
+    mv $i.jpg image$new_name.jpg
+    let factor=factor+1
+    let i=i+1
+done
+
+# convert back into a video
+ffmpeg -f image2 -i image%d.jpg -r 30 -vcodec libx264 ../gil_reversed.avi
+
+# go back to original directory where videos are stored
+
+cd ..
+
+# concatenate gil.avi and Gil_reversed.avi
+printf "file gil.avi\nfile gil_reversed.avi\n" > concat
+
+# make sure it looks good
+cat concat # yup
+
+# concatentate normal and reversed videos:
+ffmpeg -f concat -i concat -vcodec libx264 final_frog_video.avi
+
+# clean up
+rm concat
+rm gil_reversed.avi
+rm gil.avi
