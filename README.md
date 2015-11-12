@@ -16,4 +16,10 @@ As written now, the video you want to perform these actions on must be called `f
 
 The script will create a folder to hold the individual frames in; it deletes this folder before it exists.
 
-This script will take a long time to run on even reasonally long videos.
+This script will take a long time to run on even reasonably long videos.
+
+#### make_blocks.sh
+`make_blocks.sh` is a bash script that will take out the frames of a video named `final_frog_video.avi`, save them in a subdirectory called `images`, overwrite the frames with the original frames subdividied into chunks, then make a new video called `final_frog_video_blocks.avi`.  To run it, first do `chmod +x make_blocks.sh` then do `bash -x make_blocks`.
+
+#### make_blocks.py
+`make_blocks.py` is called by `make_blocks.sh` . It is run like `python make_blocks.py /path/to/directory/containing/jpgs`. It looks for jpgs in the specified folder, cuts them into blocks, then puts the pieces back in a random order. (The order was initially determined by randomization, but the order is the same for each frame.)
