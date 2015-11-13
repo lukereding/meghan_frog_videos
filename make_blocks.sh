@@ -10,7 +10,7 @@ cd images
 ffmpeg -i ../final_frog_video.avi -an -qscale 1 %05d.jpg
 
 # run python script
-python ../make_blocks.py .
+python ../make_blocks.py . rotate 80
 
 # put the frames back together
 ffmpeg -f image2 -i %05d.jpg -r 30 -vcodec libx264 ../final_frog_video_blocks.avi
