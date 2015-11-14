@@ -1,0 +1,14 @@
+#!/bin/bash
+
+COUNTER=0
+while [  $COUNTER -lt 1300 ]; do
+    printf "file 'final_frog_video.avi'\n" >> concat
+    let COUNTER=COUNTER+1
+done
+
+ffmpeg -f concat -i concat -c copy -y frog_video_hour_long.avi
+
+rm concat
+
+# trim down to 60 min
+ffmpeg -ss 00:00:00 -t 01:00:00 -i frog_video_hour_long.avi -y frog_video_hour.avi
