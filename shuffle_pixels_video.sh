@@ -16,4 +16,4 @@ python ../randomize_pixels.py .
 ffmpeg -f image2 -i %05d.jpg -r 30 -vcodec libx264 ../final_frog_video_randomized.avi
 
 cd ..
-#rm -r images/
+rm -r images/

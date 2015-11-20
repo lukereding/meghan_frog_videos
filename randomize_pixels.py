@@ -6,8 +6,10 @@ import os, sys, cv2
 def shuffle(ary):
     a=len(ary)
     b=a-1
+    # if you want to randomize the pixels in each frame independently, uncomment the following line
+    random.seed(11)
     for d in range(b,0,-1):
-         np.random.seed(11); e=random.randint(0,d)
+         e = random.randint(0,d)
          ary[[d,e]] = ary[[e,d]]
     return ary
 
@@ -28,6 +30,7 @@ for file in os.listdir(path):
 
         # go from 1d array to 2d photo
         frame = frame.reshape(shape)
+        print frame.shape
 
         cv2.imwrite(file,frame)
 
