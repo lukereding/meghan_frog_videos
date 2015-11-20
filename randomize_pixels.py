@@ -7,7 +7,7 @@ def shuffle(ary):
     a=len(ary)
     b=a-1
     for d in range(b,0,-1):
-         np.random.seed(11); e=random.randint(0,d)
+         e=random.randint(0,d)
         ary[[d,e]] = ary[[e,d]]
     return ary
 
